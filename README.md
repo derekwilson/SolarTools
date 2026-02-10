@@ -1,29 +1,45 @@
-# README #
+# SolarTools #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Tools for working with Enphase solar arrays and Shelly switches.
 
-### What is this repository for? ###
+### Projects ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+1. **SolarPOC** Proof of concept for working with Enphase Envoy gateways. A CLI tool to reporting on the gateway.
+1. **ShellyPOC** Proof of concept for working with Shelly switches. A CLI tool to reporting on a list of switches.
+1. **SolarLiveStatusPanel** A status panel showing current generation information and the ability to switch a shelly switch on and off, this could be used to control the hot water tank.
+1. **Support** Support files including prebuild versions of **SolarLiveStatusPanel**
 
-### How do I get set up? ###
+### Running  SolarLiveStatusPanel ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+There is a prebuilt version of the status panel app in the Support folder. Its intended to be used on a 64 bit version of Windows.
 
-### Contribution guidelines ###
+After copying the EXE, edit the config file, a specimen file is provided.
 
-* Writing tests
-* Code review
-* Other guidelines
+```
+{
+  "shelly": {
+    "devices": [
+      {
+        "address": "192.168.0.226",
+        "type":  "1"
+      }
+    ]
+  },
+  "enphase": {
+    "credentials" : {
+      "user": "configure your user",
+      "password": "configure your password"
+    },
+    "gateway": {
+      "address": "192.168.0.225"
+    }
+  }
+}
+```
 
-### Who do I talk to? ###
+You need to provide IP addresses for the Envoy gateway and the Shelly switch. Also cedentials for Enphase are needed to generate the token to access the gateway. The token lasts a year, once generated you can remove your credentials until the token need to be regenerated.
 
-* Repo owner or admin
-* Other community or team contact
+### Building the projects ###
+
+The projects are all built using Visual Studio (I used VS 2022), and written in C#.
+
