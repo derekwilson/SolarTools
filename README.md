@@ -9,6 +9,8 @@ Tools for working with Enphase solar arrays and Shelly switches.
 1. **SolarLiveStatusPanel** A status panel showing current generation information and the ability to switch a shelly switch on and off, this could be used to control the hot water tank.
 1. **Support** Support files including prebuild versions of **SolarLiveStatusPanel**
 
+![Screen](support/screenshots/1.png)
+
 ### Running  SolarLiveStatusPanel ###
 
 There is a prebuilt version of the status panel app in the Support folder. Its intended to be used on a 64 bit version of Windows.
@@ -20,7 +22,7 @@ After copying the EXE, edit the config file, a specimen file is provided.
   "shelly": {
     "devices": [
       {
-        "address": "192.168.0.226",
+        "address": "192.168.0.999",
         "type":  "1"
       }
     ]
@@ -31,7 +33,7 @@ After copying the EXE, edit the config file, a specimen file is provided.
       "password": "configure your password"
     },
     "gateway": {
-      "address": "192.168.0.225"
+      "address": "192.168.0.999"
     }
   }
 }
