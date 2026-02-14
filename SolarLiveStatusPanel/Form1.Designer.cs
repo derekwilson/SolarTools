@@ -256,6 +256,7 @@ namespace SolarLiveStatusPanel
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
+            KeyDown += Form1_KeyDown;
             Resize += Form1_SizeChanged;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using NEnvoy.Models;
 using SolarPOC;
+using System.Media;
 using System.Reflection;
 using System.Text;
 
@@ -89,7 +90,8 @@ namespace SolarLiveStatusPanel
             }
             // we are just going to use the first device that is type 1 as the hotwater device
             var device = settings.GetFirstDevice(ShellyAppSettings.HOTWATER_SWITCH_TYPE);
-            if (device == null) {
+            if (device == null)
+            {
                 return null;
             }
             return settings;
@@ -97,6 +99,8 @@ namespace SolarLiveStatusPanel
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.KeyPreview = true;
+
             GetSettings();
 
             _ = Reader.InitAsync(EnvoyConnection);
@@ -122,6 +126,18 @@ namespace SolarLiveStatusPanel
             if (this.WindowState == FormWindowState.Minimized || this.WindowState == FormWindowState.Normal)
             {
                 AdjustAllLabels();
+            }
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Check if the pressed key is the space bar and if the target button has focus
+            // we do not want to accidentally switch on the hotwater if we use the space bar to wake the screen
+            if (e.KeyCode == Keys.Space && checkBoxHotWater.Focused)
+            {
+                e.Handled = true;           // Mark the event as handled to stop it from reaching the button
+                e.SuppressKeyPress = true;  // Suppress the key press entirely
+                SystemSounds.Exclamation.Play();
             }
         }
 
