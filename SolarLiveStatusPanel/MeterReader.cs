@@ -58,39 +58,46 @@ namespace SolarLiveStatusPanel
 
         public async Task GetReadingsAsync()
         {
-            if (Client == null)
+            try
             {
-                return;
-            }
+                if (Client == null)
+                {
+                    return;
+                }
 
-            var meterreadings = await Client.GetMeterReadingsAsync().ConfigureAwait(false);
-            var generaingMeter = meterreadings.Where(mr => mr.EId == METER_PRODUCTION).First();
-            if (generaingMeter != null)
-            {
-                LatestReadings.Updated = DateTime.Now;
-                LatestReadings.Generating = generaingMeter.ActivePower;
-            }
+                var meterreadings = await Client.GetMeterReadingsAsync().ConfigureAwait(false);
+                var generaingMeter = meterreadings.Where(mr => mr.EId == METER_PRODUCTION).First();
+                if (generaingMeter != null)
+                {
+                    LatestReadings.Updated = DateTime.Now;
+                    LatestReadings.Generating = generaingMeter.ActivePower;
+                }
 
-            var netConsumptionMeter = meterreadings.Where(mr => mr.EId == METER_NET_CONSUMPTION).First();
-            if (generaingMeter != null && netConsumptionMeter != null)
+                var netConsumptionMeter = meterreadings.Where(mr => mr.EId == METER_NET_CONSUMPTION).First();
+                if (generaingMeter != null && netConsumptionMeter != null)
+                {
+                    var currentLoad = generaingMeter.ActivePower + netConsumptionMeter.ActivePower;
+                    LatestReadings.Load = currentLoad;
+                    if (netConsumptionMeter.ActivePower < 0)
+                    {
+                        LatestReadings.ExportImport = -netConsumptionMeter.ActivePower;
+                        LatestReadings.IsExporting = true;
+                    }
+                    else if (netConsumptionMeter.ActivePower > 0)
+                    {
+                        LatestReadings.ExportImport = netConsumptionMeter.ActivePower;
+                        LatestReadings.IsExporting = false;
+                    }
+                    else
+                    {
+                        LatestReadings.ExportImport = 0;
+                        LatestReadings.IsExporting = false;
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                var currentLoad = generaingMeter.ActivePower + netConsumptionMeter.ActivePower;
-                LatestReadings.Load = currentLoad;
-                if (netConsumptionMeter.ActivePower < 0)
-                {
-                    LatestReadings.ExportImport = -netConsumptionMeter.ActivePower;
-                    LatestReadings.IsExporting = true;
-                }
-                else if (netConsumptionMeter.ActivePower > 0)
-                {
-                    LatestReadings.ExportImport = netConsumptionMeter.ActivePower;
-                    LatestReadings.IsExporting = false;
-                }
-                else
-                {
-                    LatestReadings.ExportImport = 0;
-                    LatestReadings.IsExporting = false;
-                }
+                Logger.LogException(() => "MeterReader.GetReadingsAsync", ex);
             }
         }
 

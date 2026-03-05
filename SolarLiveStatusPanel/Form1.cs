@@ -175,27 +175,13 @@ namespace SolarLiveStatusPanel
 
         private void timerGetData_Tick(object sender, EventArgs e)
         {
-            try
-            {
-                _ = Reader.GetReadingsAsync();
-                _ = HotWaterSwitch.GetStatusAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(() => "timerGetData_Tick", ex);
-            }
+            _ = Reader.GetReadingsAsync();
+            _ = HotWaterSwitch.GetStatusAsync();
         }
 
         private void checkBoxHotWater_Click(object sender, EventArgs e)
         {
-            try
-            {
-                _ = HotWaterSwitch.ToggleSwitchAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(() => "timerGetData_Tick", ex);
-            }
+            _ = HotWaterSwitch.ToggleSwitchAsync();
         }
 
         private void PopulateTitle()

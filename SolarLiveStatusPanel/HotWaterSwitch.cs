@@ -72,59 +72,81 @@ namespace SolarLiveStatusPanel
 
         public async Task GetStatusAsync()
         {
-            if (shelly == null || _id < 0)
+            try
             {
-                return;
-            }
+                if (shelly == null || _id < 0)
+                {
+                    return;
+                }
 
-            var switchStatus = await shelly.GetSwitchStatusAsync(_id);
-            if (switchStatus != null)
-            {
-                LatestStatus.Updated = DateTime.Now;
-                LatestStatus.Id = switchStatus.Id;
-                LatestStatus.LoadWatts = switchStatus.Apower;
-                LatestStatus.IsOn = switchStatus.Output;
-                LatestStatus.RemainingDelay = switchStatus.Timer_Remaining;
-            }
+                var switchStatus = await shelly.GetSwitchStatusAsync(_id);
+                if (switchStatus != null)
+                {
+                    LatestStatus.Updated = DateTime.Now;
+                    LatestStatus.Id = switchStatus.Id;
+                    LatestStatus.LoadWatts = switchStatus.Apower;
+                    LatestStatus.IsOn = switchStatus.Output;
+                    LatestStatus.RemainingDelay = switchStatus.Timer_Remaining;
+                }
 
-            var switchConfig = await shelly.GetSwitchConfigAsync(_id);
-            if (switchConfig != null)
-            {
-                LatestStatus.AutoOn = switchConfig.Auto_On;
-                LatestStatus.AutoOnDelay = switchConfig.Auto_On_Delay;
-                LatestStatus.AutoOff = switchConfig.Auto_Off;
-                LatestStatus.AutoOffDelay = switchConfig.Auto_Off_Delay;
-            }
+                var switchConfig = await shelly.GetSwitchConfigAsync(_id);
+                if (switchConfig != null)
+                {
+                    LatestStatus.AutoOn = switchConfig.Auto_On;
+                    LatestStatus.AutoOnDelay = switchConfig.Auto_On_Delay;
+                    LatestStatus.AutoOff = switchConfig.Auto_Off;
+                    LatestStatus.AutoOffDelay = switchConfig.Auto_Off_Delay;
+                }
 
-            var deviceSchedule = await shelly.GetDeviceScheduleAsync();
-            if (deviceSchedule != null)
+                var deviceSchedule = await shelly.GetDeviceScheduleAsync();
+                if (deviceSchedule != null)
+                {
+                    LatestStatus.EnabledScheduledJobs = deviceSchedule.HasEnabledJobs;
+                }
+            }
+            catch (Exception ex)
             {
-                LatestStatus.EnabledScheduledJobs = deviceSchedule.HasEnabledJobs;
+                Logger.LogException(() => "HotWaterSwitch.GetStatusAsync", ex);
             }
         }
 
         public async Task SetSwitchAsync(bool on)
         {
-            if (shelly == null || _id < 0)
+            try
             {
-                return;
+                if (shelly == null || _id < 0)
+                {
+                    return;
+                }
+
+                var result = await shelly.ChangeSwitchAsync(_id, on);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(() => "HotWaterSwitch.SetSwitchAsync", ex);
             }
 
-            var result = await shelly.ChangeSwitchAsync(_id, on);
         }
 
         public async Task ToggleSwitchAsync()
         {
-            if (shelly == null || _id < 0)
+            try
             {
-                return;
-            }
+                if (shelly == null || _id < 0)
+                {
+                    return;
+                }
 
-            var result = await shelly.ToggleSwitchAsync(_id);
-            if (result != null)
+                var result = await shelly.ToggleSwitchAsync(_id);
+                if (result != null)
+                {
+                    // this will cause the UI to change
+                    LatestStatus.IsOn = result.IsOn;
+                }
+            }
+            catch (Exception ex)
             {
-                // this will cause the UI to change
-                LatestStatus.IsOn = result.IsOn;
+                Logger.LogException(() => "HotWaterSwitch.ToggleSwitchAsync", ex);
             }
         }
     }
