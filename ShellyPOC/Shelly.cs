@@ -275,25 +275,10 @@ namespace ShellyPOC
 
         private async Task<T?> GetAsync<T>(string url)
         {
-            try
-            {
-                string jsonResponse = await client.GetStringAsync(url);
-                //Console.WriteLine($"response: {jsonResponse}");
-                T? info = JsonSerializer.Deserialize<T>(jsonResponse, GetSerialiserOptions());
-                return info;
-            }
-            catch (HttpRequestException e)
-            {
-                // Handle HTTP errors (e.g., 404 Not Found, 401 Unauthorized)
-                Console.WriteLine($"Request error: {e.Message}");
-                return default;
-            }
-            catch (NotSupportedException e)
-            {
-                // Handle deserialization errors if the JSON is invalid or doesn't match the model
-                Console.WriteLine($"Deserialization error: {e.Message}");
-                return default;
-            }
+            string jsonResponse = await client.GetStringAsync(url);
+            //Console.WriteLine($"response: {jsonResponse}");
+            T? info = JsonSerializer.Deserialize<T>(jsonResponse, GetSerialiserOptions());
+            return info;
         }
     }
 }

@@ -121,7 +121,7 @@ namespace SolarLiveStatusPanel
             groupBox1.Size = new Size(792, 145);
             groupBox1.TabIndex = 4;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Generatin from Panels";
+            groupBox1.Text = "Generating from Panels";
             // 
             // labelGenerating
             // 

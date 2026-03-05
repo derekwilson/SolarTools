@@ -11,15 +11,21 @@ namespace SolarLiveStatusPanel
     {
         const string NOT_CONFIGURED = "Not Configured";
 
+        ILogger Logger;
+
         EnvoyConnectionInfo? EnvoyConnection = null;
         ShellyAppSettings? ShellySettings = null;
 
-        MeterReader Reader = new MeterReader();
-        HotWaterSwitch HotWaterSwitch = new HotWaterSwitch();
+        MeterReader Reader;
+        HotWaterSwitch HotWaterSwitch;
 
-        public Form1()
+        public Form1(ILogger logger)
         {
             InitializeComponent();
+            this.Logger = logger;
+
+            Reader = new MeterReader(logger);
+            HotWaterSwitch = new HotWaterSwitch(logger);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -155,6 +161,10 @@ namespace SolarLiveStatusPanel
                 PopulateTitle();
                 PopulateSolarPanelLabels();
             }
+            if (!HotWaterSwitch.LatestStatus.Configured)
+            {
+                PopulateHotWaterSwitch();
+            }
             if (HotWaterSwitch.LatestStatus.Updated != DateTime.MinValue)
             {
                 PopulateHotWaterSwitch();
@@ -165,14 +175,27 @@ namespace SolarLiveStatusPanel
 
         private void timerGetData_Tick(object sender, EventArgs e)
         {
-            // maybe sync lock this
-            _ = Reader.GetReadingsAsync();
-            _ = HotWaterSwitch.GetStatusAsync();
+            try
+            {
+                _ = Reader.GetReadingsAsync();
+                _ = HotWaterSwitch.GetStatusAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(() => "timerGetData_Tick", ex);
+            }
         }
 
         private void checkBoxHotWater_Click(object sender, EventArgs e)
         {
-            _ = HotWaterSwitch.ToggleSwitchAsync();
+            try
+            {
+                _ = HotWaterSwitch.ToggleSwitchAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(() => "timerGetData_Tick", ex);
+            }
         }
 
         private void PopulateTitle()
@@ -204,7 +227,7 @@ namespace SolarLiveStatusPanel
 
         private void PopulateHotWaterSwitch()
         {
-            if (ShellySettings == null)
+            if (ShellySettings == null || !HotWaterSwitch.LatestStatus.Configured)
             {
                 labelHotWater.Text = NOT_CONFIGURED;
                 return;

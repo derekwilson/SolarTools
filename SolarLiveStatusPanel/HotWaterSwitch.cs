@@ -1,9 +1,12 @@
 ﻿using NEnvoy.Models;
+using NLog;
 
 namespace SolarLiveStatusPanel
 {
     internal class HotWaterSwitchStatus
     {
+        public bool Configured;
+
         public DateTime Updated;
         public int Id;
         public decimal LoadWatts;
@@ -22,6 +25,8 @@ namespace SolarLiveStatusPanel
     {
         public HotWaterSwitchStatus LatestStatus = new HotWaterSwitchStatus
         {
+            Configured = false,
+
             Updated = DateTime.MinValue,
             LoadWatts = 0,
             IsOn = false,
@@ -36,16 +41,31 @@ namespace SolarLiveStatusPanel
         private int _id = -1;
 
         private Shelly? shelly = null;
+        private ILogger Logger;
+
+        public HotWaterSwitch(ILogger logger)
+        {
+            this.Logger = logger;
+        }
 
         public async Task InitAsync(ShellyAppSettingsDevice? device)
         {
             if (device != null)
             {
-                shelly = new Shelly(device.Address!);
-                var deviceStatus = await shelly.GetDeviceStatusAsync();
-                if (deviceStatus != null && deviceStatus.Switch0 != null)
+                try
                 {
-                    _id = deviceStatus.Switch0.Id;
+                    LatestStatus.Configured = true;
+                    shelly = new Shelly(device.Address!);
+                    var deviceStatus = await shelly.GetDeviceStatusAsync();
+                    if (deviceStatus != null && deviceStatus.Switch0 != null)
+                    {
+                        _id = deviceStatus.Switch0.Id;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException(() => "HotWaterSwitch.InitAsync", ex);
+                    LatestStatus.Configured = false;
                 }
             }
         }

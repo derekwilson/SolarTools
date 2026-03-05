@@ -19,6 +19,7 @@ namespace SolarLiveStatusPanel
         const long METER_PRODUCTION = 704643328;
         const long METER_NET_CONSUMPTION = 704643584;
 
+        private ILogger Logger;
         private IEnvoyClient? Client = null;
 
         public MeterReadings LatestReadings = new MeterReadings
@@ -31,8 +32,9 @@ namespace SolarLiveStatusPanel
                 IsExporting = false,
             };
 
-        public MeterReader()
+        public MeterReader(ILogger logger)
         {
+            this.Logger = logger;
         }
 
         public async Task InitAsync(EnvoyConnectionInfo? connectionConfig)
@@ -48,6 +50,7 @@ namespace SolarLiveStatusPanel
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error creating client {ex.Message}");
+                    Logger.LogException(() => "MeterReader.InitAsync", ex);
                     LatestReadings.Configured = false;
                 }
             }
