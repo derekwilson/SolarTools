@@ -60,6 +60,7 @@ namespace SolarLiveStatusPanel
                     if (deviceStatus != null && deviceStatus.Switch0 != null)
                     {
                         _id = deviceStatus.Switch0.Id;
+                        Logger.Info(() => $"HotWaterSwitch.InitAsync, id = {_id}");
                     }
                 }
                 catch (Exception ex)
@@ -142,6 +143,7 @@ namespace SolarLiveStatusPanel
                 {
                     // this will cause the UI to change
                     LatestStatus.IsOn = result.IsOn;
+                    Logger.Info(() => $"HotWaterSwitch.ToggleSwitchAsync, is on = {result.IsOn}");
                 }
             }
             catch (Exception ex)

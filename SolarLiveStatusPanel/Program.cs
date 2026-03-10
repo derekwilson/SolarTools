@@ -23,7 +23,7 @@ namespace SolarLiveStatusPanel
         {
             var loggerFactory = new NLoggerLoggerFactory();
             Logger = loggerFactory.Logger;
-            Logger.Debug(() => $"SolarLiveStatusPanel, v{GetCodeVersion()}, Running on .NET CLR: {Environment.Version.ToString()}");
+            Logger.Info(() => $"SolarLiveStatusPanel, v{GetCodeVersion()}, Running on .NET CLR: {Environment.Version.ToString()}");
 
             SetupExceptionHandler();
 
@@ -32,7 +32,7 @@ namespace SolarLiveStatusPanel
             ApplicationConfiguration.Initialize();
             Application.Run(new Form1(Logger));
 
-            Logger.Debug(() => $"SolarLiveStatusPanel, **EXIT**");
+            Logger.Info(() => $"SolarLiveStatusPanel, **EXIT**");
         }
 
         private static void SetupExceptionHandler()

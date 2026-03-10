@@ -1,5 +1,6 @@
 ﻿using NEnvoy;
 using NEnvoy.Models;
+using Refit;
 
 namespace SolarLiveStatusPanel
 {
@@ -21,6 +22,7 @@ namespace SolarLiveStatusPanel
 
         private ILogger Logger;
         private IEnvoyClient? Client = null;
+        private EnvoyConnectionInfo? ConnectionConfig = null;
 
         public MeterReadings LatestReadings = new MeterReadings
             {
@@ -39,12 +41,15 @@ namespace SolarLiveStatusPanel
 
         public async Task InitAsync(EnvoyConnectionInfo? connectionConfig)
         {
+            Logger.Info(() => "MeterReader.InitAsync");
             if (connectionConfig != null)
             {
+                ConnectionConfig = connectionConfig;
                 try
                 {
                     LatestReadings.Configured = true;
                     Client = await GetClientAsync(connectionConfig, "token.txt");
+                    Logger.Info(() => $"MeterReader.InitAsync, got client = {Client != null}");
                     await GetReadingsAsync();
                 }
                 catch (Exception ex)
@@ -95,17 +100,28 @@ namespace SolarLiveStatusPanel
                     }
                 }
             }
+            catch (ApiException apiEx)
+            {
+                Logger.LogException(() => "MeterReader.GetReadingsAsync", apiEx);
+                System.Net.HttpStatusCode statusCode = apiEx.StatusCode;
+                if (statusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    // hmmmm things have gone badly wrong we need to try and restart the connection
+                    await InitAsync(ConnectionConfig);
+                }
+            }
             catch (Exception ex)
             {
                 Logger.LogException(() => "MeterReader.GetReadingsAsync", ex);
             }
         }
 
-        private static async Task<IEnvoyClient> GetClientAsync(EnvoyConnectionInfo envoyConnectionInfo, string tokenfile, CancellationToken cancellationToken = default)
+        private async Task<IEnvoyClient> GetClientAsync(EnvoyConnectionInfo envoyConnectionInfo, string tokenfile, CancellationToken cancellationToken = default)
         {
             // If we don't have a session token, we create a client by logging in, else we create one from the session token
             if (!File.Exists(tokenfile))
             {
+                Logger.Info(() => $"MeterReader.GetClientAsync, getting new token");
                 var client = await EnvoyClient.FromLoginAsync(envoyConnectionInfo, cancellationToken).ConfigureAwait(false);
                 var token = client.GetToken();
                 if (string.IsNullOrEmpty(token))

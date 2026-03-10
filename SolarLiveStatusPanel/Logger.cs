@@ -9,6 +9,7 @@ namespace SolarLiveStatusPanel
 
         void Verbose(MessageGenerator message);
         void Debug(MessageGenerator message);
+        void Info(MessageGenerator message);
         void Warning(MessageGenerator message);
         void LogException(MessageGenerator message, Exception ex);
     }
@@ -23,6 +24,15 @@ namespace SolarLiveStatusPanel
         public NLogLogger(Logger logger)
         {
             nlogLogger = logger;
+        }
+
+        public void Info(ILogger.MessageGenerator message)
+        {
+            if (nlogLogger.IsEnabled(LogLevel.Info))
+            {
+                // only call the message delegate if we are logging
+                nlogLogger.Info(message());
+            }
         }
 
         public void Debug(ILogger.MessageGenerator message)
