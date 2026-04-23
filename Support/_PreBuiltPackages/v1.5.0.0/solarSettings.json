@@ -1,0 +1,19 @@
+﻿{
+  "shelly": {
+    "devices": [
+      {
+        "address": "192.168.0.999",
+        "type": "1"
+      }
+    ]
+  },
+  "enphase": {
+    "credentials": {
+      "user": "configure your user",
+      "password": "configure your password"
+    },
+    "gateway": {
+      "address": "192.168.0.999"
+    }
+  }
+}
