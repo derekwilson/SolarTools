@@ -11,9 +11,11 @@ Tools for working with Enphase solar arrays and Shelly switches.
 
 ![Screen](Support/screenshots/1.png)
 
-### Running  SolarLiveStatusPanel ###
+### Running the apps###
 
-There is a prebuilt version of the status panel app in the Support folder. Its intended to be used on a 64 bit version of Windows.
+There are prebuilt versions of the apps in the Support folder. They are either EXE files or ZIPs.
+
+Its intended to be used on a 64 bit version of Windows.
 
 After copying the EXE, edit the config file, a specimen file is provided.
 
