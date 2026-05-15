@@ -3,16 +3,16 @@ using System.Text.Json.Serialization;
 
 namespace NEnvoy.Internals.Converters;
 
-internal class IntTimestampDateTimeOffsetJsonConverter : JsonConverter<DateTimeOffset>
+internal class DecimalTimestampDateTimeOffsetJsonConverter : JsonConverter<DateTimeOffset>
 {
     public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TryGetInt32(out var value))
+        if (reader.TryGetDecimal(out var value))
         {
-            return DateTimeOffset.FromUnixTimeSeconds(value);
+            return DateTimeOffset.FromUnixTimeSeconds(((long)value));
         }
 
-        throw new FormatException($"IntTimestampDateTimeOffsetJsonConverter: Cannot decode");
+        throw new FormatException($"DecimalTimestampDateTimeOffsetJsonConverter: Cannot decode");
     }
 
     public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)

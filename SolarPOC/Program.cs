@@ -120,7 +120,7 @@ namespace SolarPOC
             var meterreadings = await client.GetMeterReadingsAsync().ConfigureAwait(false);
             foreach ( var meter in meterreadings )
             {
-                OutputToConsole($"ID: {meter.EId}, Power: {meter.ActivePower}");
+                OutputToConsole($"ID: {meter.EId}, Power: {meter.ActivePower}, Time: {meter.Time}");
             }
 
             var productionMeter = meterreadings.Where(mr => mr.EId == METER_PRODUCTION).First();
